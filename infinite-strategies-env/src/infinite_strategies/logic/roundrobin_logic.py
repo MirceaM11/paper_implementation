@@ -50,8 +50,8 @@ def playall_fixed(strategies_text, strategies_type, matches, turns):
             print("  ---- rotating strategy ---> {}".format(strategies_text[rotating_counter]))
             rotating_s = s2
             results = list(map(operator.add, results, sml.custom_nrof_mathches(fixed_s, rotating_s, matches, turns)))
-            winners_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter] ] = results
             normed_res = normalisation(results, matches)
+            winners_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter] ] = results
             normed_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter]] = normed_res
             rotating_counter += 1
             results = [0, 0, 0]
@@ -104,14 +104,17 @@ def playall_random(strategies_text, strategies_type, matches, turns):
             results = list(map(operator.add, results, sml.custom_nrof_mathches(fixed_s, rotating_s, matches, turns)))
             normed_res = normalisation(results, matches)
             winners_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter] ] = results
+            normed_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter]] = normed_res
             rotating_counter += 1
         fixed_counter += 1
 
     print("Pushing results to file...")
-    print("CSV file at: {}".format("csv_results/matches_"+now.isoformat()+".csv"))
-
-    winners_DF.to_csv("csv_results/rand_m"+str(matches)+"_t"+str(turns)+"_{}.csv".format(now.isoformat()))
-    print(winners_DF)
+    results_path = "/tmp/results/run_{}".format(now.isoformat())
+    print("Results for current run: {}".format(results_path))
+    os.makedirs(results_path, exist_ok=True)
+    os.chdir(results_path)
+    normed_DF.to_csv("normed_m{}_t{}.csv".format(matches, turns))
+    winners_DF.to_csv("m{}_t{}.csv".format(matches, turns))
 
 def playall_pll_random(strategies_text, strategies_type, matches, turns):
     """
