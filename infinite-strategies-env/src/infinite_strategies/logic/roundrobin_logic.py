@@ -59,9 +59,9 @@ def playall_fixed(strategies_text, strategies_type, matches, turns):
         results = [0, 0, 0]
 
     print("Pushing results to file...")
-    results_path = "csv_results/run_{}".format(now.isoformat())
+    results_path = "/tmp/results/run_{}".format(now.isoformat())
     print("Results for current run: {}".format(results_path))
-    os.makedirs(results_path)
+    os.makedirs(results_path, exist_ok=True)
     os.chdir(results_path)
     normed_DF.to_csv("normed_m{}_t{}.csv".format(matches, turns))
     winners_DF.to_csv("m{}_t{}.csv".format(matches, turns))
