@@ -14,4 +14,4 @@ services:
     volumes:
       - results:/tmp/results/
 volumes:
-  db-data:
+  results:
