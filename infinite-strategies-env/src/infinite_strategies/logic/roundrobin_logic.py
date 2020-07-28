@@ -86,7 +86,8 @@ def playall_random(strategies_text, strategies_type):
     str_table =[]
     fixed_counter = 0
     rotating_counter = 0
-
+    
+    results = [0, 0, 0]
     now = datetime.datetime.now()
     winners_DF = pd.DataFrame(str_table, index=strategies_text, columns=strategies_text)
     normed_DF = pd.DataFrame(str_table, index=strategies_text, columns=strategies_text)
