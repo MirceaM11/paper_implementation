@@ -68,7 +68,7 @@ def playall_fixed(strategies_text, strategies_type, matches, turns):
     #print("The numer of matches won by each strategy, in the first row")
     #print(winners_DF)
 
-def playall_random(strategies_text, strategies_type, matches, turns):
+def playall_random(strategies_text, strategies_type):
     """
         Description:
             The same implementation as playall_fixed.py.
@@ -82,7 +82,7 @@ def playall_random(strategies_text, strategies_type, matches, turns):
     """
 
     random_matches = random.randrange(100000, 300000, 1)
-    random_turns = random.randrange(100000, 300000, 1)
+    random_turns = random.randrange(1000, 3000, 1)
     str_table =[]
     fixed_counter = 0
     rotating_counter = 0
@@ -101,8 +101,8 @@ def playall_random(strategies_text, strategies_type, matches, turns):
         for s2 in strategies_type:
             print(" ---- rotating strategy ---> {}".format(strategies_text[rotating_counter]))
             rotating_s = s2
-            results = list(map(operator.add, results, sml.custom_nrof_mathches(fixed_s, rotating_s, matches, turns)))
-            normed_res = normalisation(results, matches)
+            results = list(map(operator.add, results, sml.custom_nrof_mathches(fixed_s, rotating_s, random_matches, random_turns)))
+            normed_res = normalisation(results, random_matches)
             winners_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter] ] = results
             normed_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter]] = normed_res
             rotating_counter += 1
@@ -113,8 +113,8 @@ def playall_random(strategies_text, strategies_type, matches, turns):
     print("Results for current run: {}".format(results_path))
     os.makedirs(results_path, exist_ok=True)
     os.chdir(results_path)
-    normed_DF.to_csv("normed_m{}_t{}.csv".format(matches, turns))
-    winners_DF.to_csv("m{}_t{}.csv".format(matches, turns))
+    normed_DF.to_csv("normed_m{}_t{}.csv".format(random_matches, random_turns))
+    winners_DF.to_csv("m{}_t{}.csv".format(random_matches, random_turns))
 
 def playall_pll_random(strategies_text, strategies_type, matches, turns):
     """
