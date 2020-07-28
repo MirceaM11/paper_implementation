@@ -3,14 +3,6 @@ services:
   strategy-runner:
     build: .
     restart: always
-    deploy:
-      resources:
-        limits:
-          cpus: '0.90'
-          memory: 100M
-        reservations:
-          cpus: '0.70'
-          memory: 80M
     volumes:
       - results:/tmp/results/
 volumes:
