@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  strategy-runner:
+  strategy-runner-1:
     build: .
     restart: always
     volumes:
