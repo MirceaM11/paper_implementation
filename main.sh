@@ -6,6 +6,6 @@ do
     WAIT=$((1 + RANDOM % 10))
     echo "Running script. Run number: ${RUNS} with wait time: ${WAIT}"
     sleep $WAIT
-    python /srv/pyCode/infinite-strategies-env/src/infinite_strategies/round_robin.py
+    python /srv/pyCode/infinite-strategies-env/src/infinite_strategies/round_robin.py -r TRUE
     echo "Done";
 done
