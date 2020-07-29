@@ -81,8 +81,8 @@ def playall_random(strategies_text, strategies_type):
             following format: [P1wins, P2wins, Equalities]
     """
 
-    random_matches = random.randrange(100000, 300000, 1)
-    random_turns = random.randrange(1000, 3000, 1)
+    random_matches = random.randrange(10000, 100000, 1)
+    random_turns = random.randrange(1000, 5000, 1)
     str_table =[]
     fixed_counter = 0
     rotating_counter = 0
