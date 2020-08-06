@@ -81,8 +81,6 @@ def playall_random(strategies_text, strategies_type):
             following format: [P1wins, P2wins, Equalities]
     """
 
-    random_matches = random.randrange(10000, 100000, 1)
-    random_turns = random.randrange(1000, 5000, 1)
     str_table =[]
     fixed_counter = 0
     rotating_counter = 0
@@ -100,6 +98,8 @@ def playall_random(strategies_text, strategies_type):
         print("Playing all matches for the fixed strategy {}...".format(strategies_text[fixed_counter]))
         rotating_counter = 0
         for s2 in strategies_type:
+            random_matches = random.randrange(10000, 50000, 1)
+            random_turns = random.randrange(80000, 100000, 1)
             print(" ---- rotating strategy ---> {}".format(strategies_text[rotating_counter]))
             rotating_s = s2
             results = list(map(operator.add, results, sml.custom_nrof_mathches(fixed_s, rotating_s, random_matches, random_turns)))

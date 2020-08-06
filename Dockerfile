@@ -5,4 +5,4 @@ WORKDIR /srv/pyCode/infinite-strategies-env
 COPY main.sh /bin/
 RUN  chmod +x /bin/main.sh && pip install -r requirements.txt
 
-ENTRYPOINT [ "/bin/main.sh", "10" ]
+ENTRYPOINT [ "/bin/main.sh", "5" ]

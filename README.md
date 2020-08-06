@@ -28,3 +28,12 @@ docker build --cpuset-cpus 1 -t paper:test0.1 .
 docker run -it [name][tag]
 /srv/pyCode/infinite-strategies-env/src/infinite_strategies/logic
 
+## Runtime ##
+
+main.sh -- responsible for running multiple simulations
+docker-compose -- to start the container and run it independently
+
+'''
+random_matches = random.randrange(10000, 50000, 1)
+random_turns = random.randrange(80000, 100000, 1)
+'''
