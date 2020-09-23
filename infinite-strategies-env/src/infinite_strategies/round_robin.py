@@ -33,6 +33,7 @@ def main(turns, matches, random, runs ):
         for el in runs:
             if el == 0:
                 el = el + 1
+                print(el)
                 rrl.playall_random( gv.firstgen_strategies_str,
                                     gv.firstgen_strategies_axl,
                                     el )

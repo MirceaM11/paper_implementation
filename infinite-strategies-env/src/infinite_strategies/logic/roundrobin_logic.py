@@ -81,8 +81,13 @@ def playall_random(strategies_text, strategies_type, run):
             following format: [P1wins, P2wins, Equalities]
     """
     # the no. of runs is used in order to 
-    matches_min, matches_max = run, run*1000
-    turns_min, turns_max = (run/2)+1, ((run/2)+1)*1000
+    matches_min = run
+    matches_max = run*1000
+    turns_min = (run/2)+1
+    turns_max =  ((run/2)+1)*1000
+
+    print("min {} ---- max {}".format(matches_min, matches_max) )
+    print("min {} ---- max {}".format(turns_min, turns_max) )
 
     str_table =[]
     fixed_counter = 0
