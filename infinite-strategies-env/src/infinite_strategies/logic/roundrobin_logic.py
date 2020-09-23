@@ -83,8 +83,8 @@ def playall_random(strategies_text, strategies_type, run):
     # the no. of runs is used in order to 
     matches_min = run
     matches_max = run*1000
-    turns_min = (run/2)+1
-    turns_max =  ((run/2)+1)*1000
+    turns_min = (run)+1
+    turns_max =  ((run)+1)*100
 
     print("min {} ---- max {}".format(matches_min, matches_max) )
     print("min {} ---- max {}".format(turns_min, turns_max) )
