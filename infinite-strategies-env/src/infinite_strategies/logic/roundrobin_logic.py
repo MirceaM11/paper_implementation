@@ -83,8 +83,8 @@ def playall_random(strategies_text, strategies_type, run):
     # the no. of runs is used in order to 
     matches_min = run
     matches_max = run*1000
-    turns_min = (run)+1
-    turns_max =  ((run)+1)*100
+    turns_min = run
+    turns_max =  run*100
 
     print("min {} ---- max {}".format(matches_min, matches_max) )
     print("min {} ---- max {}".format(turns_min, turns_max) )
@@ -118,8 +118,8 @@ def playall_random(strategies_text, strategies_type, run):
         fixed_counter += 1
 
     print("Pushing results to file...")
-    results_path = "/tmp/results/run_{}".format(now.isoformat())
-    print("Results for current run: {}".format(results_path).replace("-", "_"))
+    results_path = "/tmp/results/run_{}_{}_{}".format(run, random_matches, random_turns)
+    print("Results for current run: {}".format(results_path))
     os.makedirs(results_path, exist_ok=True)
     os.chdir(results_path)
     normed_DF.to_csv("normed_m{}_t{}.csv".format(random_matches, random_turns))

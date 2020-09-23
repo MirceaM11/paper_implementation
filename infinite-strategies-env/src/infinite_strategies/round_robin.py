@@ -37,6 +37,11 @@ def main(turns, matches, random, runs ):
                 rrl.playall_random( gv.firstgen_strategies_str,
                                     gv.firstgen_strategies_axl,
                                     el )
+            else:
+                print(el)
+                rrl.playall_random( gv.firstgen_strategies_str,
+                                    gv.firstgen_strategies_axl,
+                                    el )
 
 
 if __name__ == '__main__':
