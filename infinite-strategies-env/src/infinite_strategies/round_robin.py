@@ -31,9 +31,10 @@ def main(turns, matches, random, runs ):
         print("The elapsed time for this tournament is: {} seconds".format(end-start))
     elif random == True:
         for el in runs:
-            rrl.playall_random( gv.firstgen_strategies_str,
-                                gv.firstgen_strategies_axl,
-                                el )
+            if el == 0:
+                rrl.playall_random( gv.firstgen_strategies_str,
+                                    gv.firstgen_strategies_axl,
+                                    el )
 
 
 if __name__ == '__main__':
