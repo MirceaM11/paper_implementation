@@ -23,17 +23,14 @@ Use docker to run simulations with random numbers for turns and matches.
 See Dockerfile and docker-compose.
 
 ## Commands ##
-
-docker build --cpuset-cpus 1 -t paper:test0.1 .  
-docker run -it [name][tag]
-/srv/pyCode/infinite-strategies-env/src/infinite_strategies/logic
-
+detach:  
+screen -D -R  
+nohup python3 round_robin.py -r TURE --runs 30 > /dev/null 2>&1 &  
+reaatach  
+screen -D -R  
 ## Runtime ##
 
-main.sh -- responsible for running multiple simulations
-docker-compose -- to start the container and run it independently
-
 '''
-random_matches = random.randrange(10000, 50000, 1)
-random_turns = random.randrange(80000, 100000, 1)
+random_matches = random.randrange(matches_min, matches_max, 1)
+random_turns = random.randrange(tuns_min, turns_max, 1)
 '''
