@@ -17,7 +17,7 @@ PROBLEMS:
 
 """
 
-def main(turns, matches, random):
+def main(turns, matches, random, runs ):
     if random == False:
         start = time.time()
         print("Running in with the values provided by you or the default ones.")
@@ -30,8 +30,10 @@ def main(turns, matches, random):
         end = time.time()
         print("The elapsed time for this tournament is: {} seconds".format(end-start))
     elif random == True:
-        rrl.playall_random( gv.firstgen_strategies_str,
-                            gv.firstgen_strategies_axl )
+        for el in runs:
+            rrl.playall_random( gv.firstgen_strategies_str,
+                                gv.firstgen_strategies_axl,
+                                el )
 
 
 if __name__ == '__main__':
@@ -48,12 +50,15 @@ if __name__ == '__main__':
     parser.add_argument("--turns", "-t", help="The number of turns within a match, default is 200", default=200, type=int)
     parser.add_argument("--matches", "-m", help="The number of matches, default is 1", default=1, type=int)
     parser.add_argument("--random", "-r", help="For randomly generating a the number of matches and the numbers of turns in a match.", default=False, type=bool)
+    parser.add_argument("--runs", "-it", help=" No. of times a Monte Carlo analysis is run. ", default=50, type=int)
 
     my_args = parser.parse_args()
     turns = my_args.turns
     matches = my_args.matches
     random = my_args.random
-    
-    
+    runs = my_args.runs
+
+    range_run = range(runs)
+
     ### MAIN ###
-    main(turns, matches, random)
+    main(turns, matches, random, range_run)

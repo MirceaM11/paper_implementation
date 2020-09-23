@@ -68,7 +68,7 @@ def playall_fixed(strategies_text, strategies_type, matches, turns):
     #print("The numer of matches won by each strategy, in the first row")
     #print(winners_DF)
 
-def playall_random(strategies_text, strategies_type):
+def playall_random(strategies_text, strategies_type, run):
     """
         Description:
             The same implementation as playall_fixed.py.
@@ -80,6 +80,9 @@ def playall_random(strategies_text, strategies_type):
             Inside the table at every specific column and row you will find a list having the 
             following format: [P1wins, P2wins, Equalities]
     """
+    # the no. of runs is used in order to 
+    matches_min, matches_max = run, run*1000
+    turns_min, turns_max = (run/2)+1, ((run/2)+1)*1000
 
     str_table =[]
     fixed_counter = 0
@@ -98,8 +101,8 @@ def playall_random(strategies_text, strategies_type):
         print("Playing all matches for the fixed strategy {}...".format(strategies_text[fixed_counter]))
         rotating_counter = 0
         for s2 in strategies_type:
-            random_matches = random.randrange(10000, 50000, 1)
-            random_turns = random.randrange(80000, 100000, 1)
+            random_matches = random.randrange(matches_min, matches_max, 1)
+            random_turns = random.randrange(turns_min, turns_max, 1)
             print(" ---- rotating strategy ---> {}".format(strategies_text[rotating_counter]))
             rotating_s = s2
             results = list(map(operator.add, results, sml.custom_nrof_mathches(fixed_s, rotating_s, random_matches, random_turns)))
@@ -111,7 +114,7 @@ def playall_random(strategies_text, strategies_type):
 
     print("Pushing results to file...")
     results_path = "/tmp/results/run_{}".format(now.isoformat())
-    print("Results for current run: {}".format(results_path))
+    print("Results for current run: {}".format(results_path).replace("-", "_"))
     os.makedirs(results_path, exist_ok=True)
     os.chdir(results_path)
     normed_DF.to_csv("normed_m{}_t{}.csv".format(random_matches, random_turns))
