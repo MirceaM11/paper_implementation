@@ -15,8 +15,10 @@ import axelrod as axl
 ### VARIABLES 
 ### DICTS FOR REPRESENTING STRATEGIES
 ###
+winners_DF = pd.DataFrame()
+normed_DF = pd.DataFrame()
 
-base_strategies =	{
+base_strategies =	{ 
     "coop": axl.Cooperator(),
     "alter": axl.Alternator(),
     "tft": axl.TitForTat(),
@@ -33,25 +35,26 @@ base_strategies =	{
     "tull": axl.FirstByTullock(),
     "rand": axl.Random()
 }
-
-firstgen_strategies_str = ["Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
+#### ORDER MUST BE THE SAME AS FIRSTEN_STR TYPE
+firstgen_str_text = ["Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
                 "Shubik", "SteinAndRapoport", "Grudger", "Davis", "RevisedDowning", "Feld", "Joss","Tullock", "Random" ]
 
-firstgen_strategies_axl = [  axl.Cooperator(),
-                    axl.Alternator(),
-                    axl.TitForTat(),
-                    axl.FirstByTidemanAndChieruzzi(),
-                    axl.FirstByNydegger(),
-                    axl.FirstByGrofman(),
-                    axl.FirstByShubik(),
-                    axl.FirstBySteinAndRapoport(),
-                    axl.Grudger(),
-                    axl.FirstByDavis(),
-                    axl.RevisedDowning(),
-                    axl.FirstByFeld(),
-                    axl.FirstByJoss(),
-                    axl.FirstByTullock(),
-                    axl.Random() ]
+ #### ORDER MUST BE THE SAME AS FISTGEN STR STR(TEXT)
+firstgen_str_type = [   axl.Cooperator(),   
+                        axl.Alternator(),
+                        axl.TitForTat(),
+                        axl.FirstByTidemanAndChieruzzi(),
+                        axl.FirstByNydegger(),
+                        axl.FirstByGrofman(),
+                        axl.FirstByShubik(),
+                        axl.FirstBySteinAndRapoport(),
+                        axl.Grudger(),
+                        axl.FirstByDavis(),
+                        axl.RevisedDowning(),
+                        axl.FirstByFeld(),
+                        axl.FirstByJoss(),
+                        axl.FirstByTullock(),
+                        axl.Random() ]
 ###
 #################### FUNCTION FOR ONE MATCH      
 ###
@@ -84,7 +87,7 @@ def custom_nrof_mathches (p1, p2, matches, turns):
 ###
 #################### PLAY A RAND. NUMBER OF MATCHES AND TURNS FOR A NUMBER OF RUNS      
 ###
-def playall_random(strategies_text, strategies_type, run):
+def playall_random(run):
     '''
         Numpy random Gaussian used to generate random nr. of 
         matches and turns.
@@ -101,18 +104,18 @@ def playall_random(strategies_text, strategies_type, run):
     
     results = [0, 0, 0]
 
-    winners_DF = pd.DataFrame(str_table, index=strategies_text, columns=strategies_text)
-    normed_DF = pd.DataFrame(str_table, index=strategies_text, columns=strategies_text)
+    winners_DF = pd.DataFrame(str_table, index=firstgen_str_type, columns=firstgen_str_text)
+    normed_DF = pd.DataFrame(str_table, index=firstgen_str_type, columns=firstgen_str_text)
 
-    for s1 in strategies_type:
+    for s1 in firstgen_str_type:
         fixed_s = s1
         rotating_counter = 0
-        for s2 in strategies_type:
+        for s2 in firstgen_str_type:
             rotating_s = s2
             results = list(map(operator.add, results, custom_nrof_mathches(fixed_s, rotating_s, matches, turns)))
             normed_res = normalisation(results, matches)
-            winners_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter] ] = results
-            normed_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter]] = normed_res
+            winners_DF.at[ firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter] ] = results
+            normed_DF.at[ firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter]] = normed_res
             rotating_counter += 1
             results = [0, 0, 0]
         fixed_counter += 1
@@ -124,9 +127,31 @@ def playall_random(strategies_text, strategies_type, run):
     os.chdir(results_path)
     normed_DF.to_csv("normed_m{}_t{}.csv".format(matches, turns))
     winners_DF.to_csv("m{}_t{}.csv".format(matches, turns))
+
 ###
 ###################### AUX FUNCTIONS 
 ### 
+
+def sum_results():
+    """
+    Addition of elements in a pd object.
+    """
+    fixed_counter = 0
+    for s1 in firstgen_str_type:
+        fixed_s = s1
+        rotating_counter = 0
+        for s2 in firstgen_str_type:
+            rotating_s = s2
+            ### sum the elements of 2 lists inside the pd
+            win_mem = winners_DF.at[firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter]]
+            nor_mem = normed_DF.at[firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter]]
+            
+            #TODO: DO THE SUM OF LISTS
+
+            rotating_counter += 1
+        fixed_counter += 1
+        results = [0, 0, 0]    
+
 def normalisation(results, matches):
     """
     Normalize game results in percentage.
@@ -137,6 +162,7 @@ def normalisation(results, matches):
         normed_results.append(norm*100)
 
     return normed_results
+
 ###
 #################### MAIN LOGIC
 ###
@@ -147,15 +173,16 @@ def main(random, runs):
         for el in range(runs):
             if el == 0:
                 el = el + 1
-                playall_random( firstgen_strategies_str,
-                                firstgen_strategies_axl,
+                playall_random( firstgen_str_text,
+                                firstgen_str_type,
                                 el 
-                                )
+                                )         
             else:
-                playall_random( firstgen_strategies_str,
-                                firstgen_strategies_axl,
+                playall_random( firstgen_str_text,
+                                firstgen_str_type,
                                 el 
                                 )
+        sum_results()
 
 ###
 #################### MAIN EXECUTION
