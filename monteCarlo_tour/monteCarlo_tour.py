@@ -1,18 +1,21 @@
 '''
-One function
+One module to rule thema all!
+
+TODO: Speed improvements.
 '''
 
-import time, os, operator, random
+import time, os, operator
 import argparse
-import datetime
+import numpy as np
 import pandas as pd
 
 import axelrod as axl
 
 ###
 ### VARIABLES 
-### MOVED FROM GLOBAL SCOPE
+### DICTS FOR REPRESENTING STRATEGIES
 ###
+
 base_strategies =	{
     "coop": axl.Cooperator(),
     "alter": axl.Alternator(),
@@ -30,8 +33,6 @@ base_strategies =	{
     "tull": axl.FirstByTullock(),
     "rand": axl.Random()
 }
-# used by roundrobin_logic.py for creating the tables
-# insert your lists below with your strategies to run your experiments
 
 firstgen_strategies_str = ["Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
                 "Shubik", "SteinAndRapoport", "Grudger", "Davis", "RevisedDowning", "Feld", "Joss","Tullock", "Random" ]
@@ -56,7 +57,7 @@ firstgen_strategies_axl = [  axl.Cooperator(),
 ###
 def custom_nrof_mathches (p1, p2, matches, turns):
     ''' 
-        For playing N number custom matches between 2 players.
+        For playing M matches and N turns with random inputs.
         Also gathers different statistics. 
     '''
 
@@ -85,27 +86,21 @@ def custom_nrof_mathches (p1, p2, matches, turns):
 ###
 def playall_random(strategies_text, strategies_type, run):
     '''
-        Description:
-            The same implementation as playall_fixed.py.
-            It uses random generated number for the number of matches and turns.
-        Motivation:
-            To simulate the concept of infinity random generated numbers are used
-            which are higher than 100k for matches and turns.
-        Results:
-            Inside the table at every specific column and row you will find a list having the 
-            following format: [P1wins, P2wins, Equalities]
+        Numpy random Gaussian used to generate random nr. of 
+        matches and turns.
+        Uses pandas dataframe objects for storing the results.
+        Exports dataframes to csv files.
+        TODO: Pandas obj are used quite inneficently.
     '''
-    # the no. of runs is used in order to 
-    matches_min = run
-    matches_max = run*1000
-    turns_min = run
-    turns_max =  run*100
-
     str_table =[]
     fixed_counter = 0
     rotating_counter = 0
+
+    matches = np.random.default_rng().normal(200, 5, None)
+    turns = np.random.default_rng().normal(100, 5, None)
     
     results = [0, 0, 0]
+
     winners_DF = pd.DataFrame(str_table, index=strategies_text, columns=strategies_text)
     normed_DF = pd.DataFrame(str_table, index=strategies_text, columns=strategies_text)
 
@@ -113,22 +108,20 @@ def playall_random(strategies_text, strategies_type, run):
         fixed_s = s1
         rotating_counter = 0
         for s2 in strategies_type:
-            random_matches = random.randrange(matches_min, matches_max, 1)
-            random_turns = random.randrange(turns_min, turns_max, 1)
             rotating_s = s2
-            results = list(map(operator.add, results, custom_nrof_mathches(fixed_s, rotating_s, random_matches, random_turns)))
-            normed_res = normalisation(results, random_matches)
+            results = list(map(operator.add, results, custom_nrof_mathches(fixed_s, rotating_s, matches, turns)))
+            normed_res = normalisation(results, matches)
             winners_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter] ] = results
             normed_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter]] = normed_res
             rotating_counter += 1
         fixed_counter += 1
 
-    results_path = "/tmp/results/run_{}_{}_{}".format(run, random_matches, random_turns)
+    results_path = "/tmp/results/run_{}_{}_{}".format(run, matches, turns)
     print("Results for current run: {}".format(results_path))
     os.makedirs(results_path, exist_ok=True)
     os.chdir(results_path)
-    normed_DF.to_csv("normed_m{}_t{}.csv".format(random_matches, random_turns))
-    winners_DF.to_csv("m{}_t{}.csv".format(random_matches, random_turns))
+    normed_DF.to_csv("normed_m{}_t{}.csv".format(matches, turns))
+    winners_DF.to_csv("m{}_t{}.csv".format(matches, turns))
 ###
 ###################### AUX FUNCTIONS 
 ### 
@@ -143,7 +136,7 @@ def normalisation(results, matches):
 
     return normed_results
 ###
-#################### MAIN DESCRIPTION
+#################### MAIN LOGIC
 ###
 def main(random, runs):
     if random == False:
@@ -179,8 +172,6 @@ if __name__ == '__main__':
     parser.add_argument("--runs", "-it", help=" No. of times a Monte Carlo analysis is run. ", default=50, type=int)
 
     my_args = parser.parse_args()
-    turns = my_args.turns
-    matches = my_args.matches
     random = my_args.random
     runs = my_args.runs
 
