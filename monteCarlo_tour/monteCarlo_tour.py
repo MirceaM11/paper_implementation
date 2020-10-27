@@ -96,8 +96,8 @@ def playall_random(strategies_text, strategies_type, run):
     fixed_counter = 0
     rotating_counter = 0
 
-    matches = np.random.default_rng().normal(200, 5, None)
-    turns = np.random.default_rng().normal(100, 5, None)
+    matches = int(np.random.default_rng().normal(200, 5, None))
+    turns = int(np.random.default_rng().normal(100, 5, None))
     
     results = [0, 0, 0]
 
@@ -114,7 +114,9 @@ def playall_random(strategies_text, strategies_type, run):
             winners_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter] ] = results
             normed_DF.at[ strategies_text[fixed_counter], strategies_text[rotating_counter]] = normed_res
             rotating_counter += 1
+            results = [0, 0, 0]
         fixed_counter += 1
+        results = [0, 0, 0]
 
     results_path = "/tmp/results/run_{}_{}_{}".format(run, matches, turns)
     print("Results for current run: {}".format(results_path))
@@ -142,7 +144,7 @@ def main(random, runs):
     if random == False:
         print("Only random mode available.")
     elif random == True:
-        for el in runs:
+        for el in range(runs):
             if el == 0:
                 el = el + 1
                 playall_random( firstgen_strategies_str,
@@ -168,14 +170,12 @@ if __name__ == '__main__':
     # Create parser and add arguments.
     parser = argparse.ArgumentParser(description="Main function for runnnig round robin tournaments.")
 
-    parser.add_argument("--random", "-r", help="For randomly generating a the number of matches and the numbers of turns in a match.", default=False, type=bool)
-    parser.add_argument("--runs", "-it", help=" No. of times a Monte Carlo analysis is run. ", default=50, type=int)
+    parser.add_argument("--random", "-r", help="For randomly generating a the number of matches and the numbers of turns in a match.", default=True, type=bool)
+    parser.add_argument("--runs", "-R", help=" No. of times a Monte Carlo analysis is run. ", default=5, type=int)
 
     my_args = parser.parse_args()
     random = my_args.random
     runs = my_args.runs
 
-    range_run = range(runs)
-
     ### MAIN ###
-    main(random, range_run)
+    main(random, runs)
