@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 '''
 One module to rule thema all!
 
@@ -8,6 +10,7 @@ import time, os, operator
 import argparse
 import numpy as np
 import pandas as pd
+import pprint
 
 import axelrod as axl
 
@@ -15,8 +18,6 @@ import axelrod as axl
 ### VARIABLES 
 ### DICTS FOR REPRESENTING STRATEGIES
 ###
-winners_DF = pd.DataFrame()
-normed_DF = pd.DataFrame()
 
 base_strategies =	{ 
     "coop": axl.Cooperator(),
@@ -36,7 +37,7 @@ base_strategies =	{
     "rand": axl.Random()
 }
 #### ORDER MUST BE THE SAME AS FIRSTEN_STR TYPE
-firstgen_str_text = ["Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
+firstgen_str_text = [ "Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
                 "Shubik", "SteinAndRapoport", "Grudger", "Davis", "RevisedDowning", "Feld", "Joss","Tullock", "Random" ]
 
  #### ORDER MUST BE THE SAME AS FISTGEN STR STR(TEXT)
@@ -55,6 +56,19 @@ firstgen_str_type = [   axl.Cooperator(),
                         axl.FirstByJoss(),
                         axl.FirstByTullock(),
                         axl.Random() ]
+
+
+
+avrg_win_df = pd.DataFrame(index=firstgen_str_text, columns=firstgen_str_text)
+avrg_norm_df = pd.DataFrame(index=firstgen_str_text, columns=firstgen_str_text)
+
+
+#### VARS FOR PROBABILISTIC DISTRIBUTION
+mean_m = 10000
+dev_m = 3000
+mean_t = 7000
+dev_t = 3000
+
 ###
 #################### FUNCTION FOR ONE MATCH      
 ###
@@ -93,64 +107,104 @@ def playall_random(run):
         matches and turns.
         Uses pandas dataframe objects for storing the results.
         Exports dataframes to csv files.
-        TODO: Pandas obj are used quite inneficently.
     '''
-    str_table =[]
-    fixed_counter = 0
-    rotating_counter = 0
+    fc = 0
 
-    matches = int(np.random.default_rng().normal(200, 5, None))
-    turns = int(np.random.default_rng().normal(100, 5, None))
+    matches = int(np.random.default_rng().normal(mean_m, dev_m, None))
+    turns = int(np.random.default_rng().normal(mean_t, dev_t, None))
+    
+    winners_DF = pd.DataFrame( index=firstgen_str_text, columns=firstgen_str_text)
+    normed_DF = pd.DataFrame( index=firstgen_str_text, columns=firstgen_str_text)
     
     results = [0, 0, 0]
 
-    winners_DF = pd.DataFrame(str_table, index=firstgen_str_type, columns=firstgen_str_text)
-    normed_DF = pd.DataFrame(str_table, index=firstgen_str_type, columns=firstgen_str_text)
-
     for s1 in firstgen_str_type:
         fixed_s = s1
-        rotating_counter = 0
+        rc = 0
         for s2 in firstgen_str_type:
             rotating_s = s2
             results = list(map(operator.add, results, custom_nrof_mathches(fixed_s, rotating_s, matches, turns)))
             normed_res = normalisation(results, matches)
-            winners_DF.at[ firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter] ] = results
-            normed_DF.at[ firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter]] = normed_res
-            rotating_counter += 1
+            winners_DF.at[ firstgen_str_text[fc], firstgen_str_text[rc] ] = results
+            normed_DF.at[ firstgen_str_text[fc], firstgen_str_text[rc]] = normed_res
+            rc += 1
             results = [0, 0, 0]
-        fixed_counter += 1
+        fc += 1
         results = [0, 0, 0]
+    if not os.path.exists('results/single_results_{}_{}'.format(mean_m, mean_t)):
+        os.makedirs('results/single_results_{}_{}'.format(mean_m, mean_t))
+    local_results_path = "results/single_results_{}_{}".format(mean_m, mean_t)
 
-    results_path = "/tmp/results/run_{}_{}_{}".format(run, matches, turns)
-    print("Results for current run: {}".format(results_path))
-    os.makedirs(results_path, exist_ok=True)
-    os.chdir(results_path)
-    normed_DF.to_csv("normed_m{}_t{}.csv".format(matches, turns))
-    winners_DF.to_csv("m{}_t{}.csv".format(matches, turns))
+    normed_DF.to_csv("{}/normed_m{}_t{}.csv".format(local_results_path ,matches, turns))
+    winners_DF.to_csv("{}/winners_m{}_t{}.csv".format(local_results_path, matches, turns))
 
+    sum_results(run ,winners_DF, normed_DF)
+
+def sum_results(run, winners_DF, normed_DF):
+    """
+    Addition of elements in a pd object.
+    """
+    fc = 0
+    for s1 in firstgen_str_type:
+        fixed_s = s1
+        rc = 0
+        for s2 in firstgen_str_type:
+            rotating_s = s2
+            avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
+                map(operator.add, avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], 
+                    winners_DF.at[firstgen_str_text[fc], firstgen_str_text[rc]] ))
+            avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
+                map(operator.add, avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], 
+                    normed_DF.at[firstgen_str_text[fc], firstgen_str_text[rc]] ))
+            rc += 1
+        fc += 1
 ###
 ###################### AUX FUNCTIONS 
 ### 
 
-def sum_results():
+def avg_to_file(run):
     """
-    Addition of elements in a pd object.
+    Write pd objects containing the averages to csv file.
     """
-    fixed_counter = 0
+    if not os.path.exists('results/avg_results_5000_200'):
+        os.makedirs('results/avg_results_5000_200')
+    avg_results_path = "results/avg_results_5000_200"
+    
+    avrg_win_df.to_csv("{}/winners_avg_{}.csv".format(avg_results_path, run))
+    avrg_norm_df.to_csv("{}/normed_avg_{}.csv".format(avg_results_path, run))
+
+def init_avg_pds():
+    """
+    Inits every element of the pd dataframe with: [0,0,0]
+    """
+    fc = 0
     for s1 in firstgen_str_type:
         fixed_s = s1
-        rotating_counter = 0
+        rc = 0
         for s2 in firstgen_str_type:
             rotating_s = s2
-            ### sum the elements of 2 lists inside the pd
-            win_mem = winners_DF.at[firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter]]
-            nor_mem = normed_DF.at[firstgen_str_text[fixed_counter], firstgen_str_text[rotating_counter]]
-            
-            #TODO: DO THE SUM OF LISTS
+            avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = [0,0,0]
+            avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = [0,0,0]
+            rc += 1
+        fc += 1
 
-            rotating_counter += 1
-        fixed_counter += 1
-        results = [0, 0, 0]    
+def pd_elements_division(runs):
+    """
+    Inits every element of the pd dataframe with: [0,0,0]
+    """
+    run_list = [runs, runs, runs]
+    fc = 0
+    for s1 in firstgen_str_type:
+        fixed_s = s1
+        rc = 0
+        for s2 in firstgen_str_type:
+            rotating_s = s2
+            avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
+                map(operator.truediv, avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], run_list ))
+            avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
+                map(operator.truediv, avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], run_list ))
+            rc += 1
+        fc += 1
 
 def normalisation(results, matches):
     """
@@ -170,19 +224,24 @@ def main(random, runs):
     if random == False:
         print("Only random mode available.")
     elif random == True:
+        print("Initializing pds for average results...")
+        init_avg_pds()
+        print("Running simulations...")
         for el in range(runs):
             if el == 0:
                 el = el + 1
-                playall_random( firstgen_str_text,
-                                firstgen_str_type,
-                                el 
-                                )         
+                playall_random(el)
             else:
-                playall_random( firstgen_str_text,
-                                firstgen_str_type,
-                                el 
-                                )
-        sum_results()
+                playall_random(el)
+    print("Dividing elements...")
+    pd_elements_division(runs)
+    print("Writing to file...")
+    avg_to_file(runs)
+
+    for strategy in firstgen_str_text:
+        for i, row in avrg_norm_df.iterrows():
+            print(type(row[strategy]))
+            print(row[strategy])
 
 ###
 #################### MAIN EXECUTION
@@ -197,9 +256,13 @@ if __name__ == '__main__':
     # Create parser and add arguments.
     parser = argparse.ArgumentParser(description="Main function for runnnig round robin tournaments.")
 
-    parser.add_argument("--random", "-r", help="For randomly generating a the number of matches and the numbers of turns in a match.", default=True, type=bool)
-    parser.add_argument("--runs", "-R", help=" No. of times a Monte Carlo analysis is run. ", default=5, type=int)
-
+    parser.add_argument("--random", "-r", 
+        help="For randomly generating a the number of matches and the numbers of turns in a match.", 
+        default=True, type=bool)
+    parser.add_argument("--runs", "-R", 
+        help=" No. of times a Monte Carlo analysis is run. ", 
+        default=5, type=int)
+    
     my_args = parser.parse_args()
     random = my_args.random
     runs = my_args.runs
