@@ -14,13 +14,11 @@ Results in local tmp folder.
 
 ## Experiments ##
 
-Run multiple automated tournaments to see how the strategies behave in the  
-unknown random situations.
+Run multiple monte carlo tournaments having different random number of turns and matches.
 
+## Results ##
 
-## Commands ##
-detach:  
-screen -D -R  
-nohup python3 round_robin.py -r TURE --runs 30 > /dev/null 2>&1 &  
-reaatach  
-screen -D -R  
+Here is a GIF displaying the results from a test run.  
+There are 5 seconds/run.
+
+![](results.gif)
