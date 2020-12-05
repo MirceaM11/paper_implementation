@@ -1,6 +1,9 @@
 # Monte Carlo Tournament #
 
 Implementation for Master's Thesis.
+# Theory #
+Simple game(no utilities):
+![](game_design_normal_form.png)
 
 # Implementation #
 
