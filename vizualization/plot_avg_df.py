@@ -7,6 +7,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
+dev_t = 30
 
 #### ORDER MUST BE THE SAME AS FIRSTEN_STR TYPE
 firstgen_str_text = [ "Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
@@ -20,8 +21,8 @@ width = 0.15
 
 avrg_win_df = pd.DataFrame(index=firstgen_str_text, columns=firstgen_str_text)
 avrg_norm_df = pd.DataFrame(index=firstgen_str_text, columns=firstgen_str_text)
-avrg_win_df = pd.read_csv("../monteCarlo_tour/results/avg_results/winners_avg_5.csv", index_col=0, converters={'column_name': eval})
-avrg_norm_df = pd.read_csv("../monteCarlo_tour/results/avg_results/normed_avg_5.csv", index_col=0, converters={'column_name': eval})
+avrg_win_df = pd.read_csv("../monteCarlo_tour/results/single_results_1000_200_dev{}/winners_m1000_t200_dev{}.csv".format(dev_t, dev_t), index_col=0, converters={'column_name': eval})
+avrg_norm_df = pd.read_csv("../monteCarlo_tour/results/single_results_1000_200_dev{}/normed_m1000_t200_dev{}.csv".format(dev_t, dev_t), index_col=0, converters={'column_name': eval})
 
 def dict_per_strategy():
     """
@@ -48,7 +49,7 @@ def dict_per_strategy():
 
 def pie_plot(data, strategy):
     # Check if colors where provided, otherwhise use the default color cycle
-    path = "plots/{}.jpeg".format(strategy)
+    path = "dev_run_{}/{}.jpeg".format(dev_t, strategy)
     labels = 'P2W', 'P1W', 'EQs'
     explode = (0, 0.2, 0)
     fig = plt.figure(figsize=(16,8))
@@ -73,9 +74,9 @@ def pie_plot(data, strategy):
 
 def main():
             
-    if not os.path.exists('plots/'):
+    if not os.path.exists('dev_run_{}/'.format(dev_t)):
         print("Creating directory for results.")
-        os.makedirs("plots/")
+        os.makedirs('dev_run_{}/'.format(dev_t))
     dict_per_strategy()
     for strategy in firstgen_str_text: 
         pie_plot(avrg_norm_dict[strategy], strategy)
