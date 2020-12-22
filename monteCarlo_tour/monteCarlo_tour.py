@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 
 '''
 One module to rule thema all!
@@ -64,29 +64,37 @@ avrg_norm_df = pd.DataFrame(index=firstgen_str_text, columns=firstgen_str_text)
 
 
 #### VARS FOR PROBABILISTIC DISTRIBUTION
-mean_m = 10000
-dev_m = 3000
-mean_t = 7000
-dev_t = 3000
+
+
+
+mean_m = 1000
+#dev_m = 0
+mean_t = 200
+dev_t = 30
+
 
 ###
 #################### FUNCTION FOR ONE MATCH      
 ###
-def custom_nrof_mathches (p1, p2, matches, turns):
+def custom_nrof_mathches (p1, p2, matches):
     ''' 
-        For playing M matches and N turns with random inputs.
-        Also gathers different statistics. 
+        Plays N matches and N turns with random inputs.
+        Also gathers statistics. 
     '''
 
     players = (p1, p2) 
-    turns =  turns
-    match = axl.Match(players, turns=turns)
+
     p1_wins = 0
     p2_wins = 0
     eq = 0
     results = []
 
     for m in range(matches):
+        if dev_t is None:
+            turns = mean_t
+        else:
+            turns = int(np.random.default_rng().normal(mean_t, dev_t, None))
+        match = axl.Match(players, turns=turns)
         match.play()
         if match.winner() == p1:
             p1_wins += 1
@@ -110,8 +118,9 @@ def playall_random(run):
     '''
     fc = 0
 
-    matches = int(np.random.default_rng().normal(mean_m, dev_m, None))
-    turns = int(np.random.default_rng().normal(mean_t, dev_t, None))
+    #matches = int(np.random.default_rng().normal(mean_m, dev_m, None))
+    matches = mean_m
+    turns = mean_t
     
     winners_DF = pd.DataFrame( index=firstgen_str_text, columns=firstgen_str_text)
     normed_DF = pd.DataFrame( index=firstgen_str_text, columns=firstgen_str_text)
@@ -123,7 +132,7 @@ def playall_random(run):
         rc = 0
         for s2 in firstgen_str_type:
             rotating_s = s2
-            results = list(map(operator.add, results, custom_nrof_mathches(fixed_s, rotating_s, matches, turns)))
+            results = list(map(operator.add, results, custom_nrof_mathches(fixed_s, rotating_s, matches)))
             normed_res = normalisation(results, matches)
             winners_DF.at[ firstgen_str_text[fc], firstgen_str_text[rc] ] = results
             normed_DF.at[ firstgen_str_text[fc], firstgen_str_text[rc]] = normed_res
@@ -131,17 +140,17 @@ def playall_random(run):
             results = [0, 0, 0]
         fc += 1
         results = [0, 0, 0]
-    if not os.path.exists('results/single_results_{}_{}'.format(mean_m, mean_t)):
-        os.makedirs('results/single_results_{}_{}'.format(mean_m, mean_t))
-    local_results_path = "results/single_results_{}_{}".format(mean_m, mean_t)
+    if not os.path.exists('results/single_results_{}_{}_dev{}'.format(mean_m, mean_t, dev_t)):
+        os.makedirs('results/single_results_{}_{}_dev{}'.format(mean_m, mean_t, dev_t))
+    local_results_path = "results/single_results_{}_{}_dev{}".format(mean_m, mean_t, dev_t)
 
-    normed_DF.to_csv("{}/normed_m{}_t{}.csv".format(local_results_path ,matches, turns))
-    winners_DF.to_csv("{}/winners_m{}_t{}.csv".format(local_results_path, matches, turns))
+    normed_DF.to_csv("{}/normed_m{}_t{}_dev{}.csv".format(local_results_path ,matches, turns, dev_t))
+    winners_DF.to_csv("{}/winners_m{}_t{}_dev{}.csv".format(local_results_path, matches, turns, dev_t))
 
     sum_results(run ,winners_DF, normed_DF)
 
 def sum_results(run, winners_DF, normed_DF):
-    """
+    """ 
     Addition of elements in a pd object.
     """
     fc = 0
@@ -261,7 +270,7 @@ if __name__ == '__main__':
         default=True, type=bool)
     parser.add_argument("--runs", "-R", 
         help=" No. of times a Monte Carlo analysis is run. ", 
-        default=5, type=int)
+        default=1, type=int)
     
     my_args = parser.parse_args()
     random = my_args.random

@@ -23,5 +23,3 @@ Run multiple monte carlo tournaments having different random number of turns and
 
 Here is a GIF displaying the results from a test run.  
 There are 5 seconds/run.
-
-![](results.gif)
