@@ -2,8 +2,6 @@
 
 '''
 One module to rule thema all!
-
-TODO: Speed improvements.
 '''
 
 import time, os, operator
@@ -14,65 +12,19 @@ import pprint
 
 import axelrod as axl
 
-###
-### VARIABLES 
-### DICTS FOR REPRESENTING STRATEGIES
-###
+from players import players as strategy_type
+from players import secondgen_str_text as strategy_text
 
-base_strategies =	{ 
-    "coop": axl.Cooperator(),
-    "alter": axl.Alternator(),
-    "tft": axl.TitForTat(),
-    "tac": axl.FirstByTidemanAndChieruzzi(),
-    "nydg": axl.FirstByNydegger(),
-    "grof": axl.FirstByGrofman(),
-    "shub": axl.FirstByShubik(),
-    "sara": axl.FirstBySteinAndRapoport(),
-    "grudger": axl.Grudger(),
-    "davis": axl.FirstByDavis(),
-    "rdown": axl.RevisedDowning(),
-    "feld": axl.FirstByFeld(),
-    "joss": axl.FirstByJoss(),
-    "tull": axl.FirstByTullock(),
-    "rand": axl.Random()
-}
-#### ORDER MUST BE THE SAME AS FIRSTEN_STR TYPE
-firstgen_str_text = [ "Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
-                "Shubik", "SteinAndRapoport", "Grudger", "Davis", "RevisedDowning", "Feld", "Joss","Tullock", "Random" ]
-
- #### ORDER MUST BE THE SAME AS FISTGEN STR STR(TEXT)
-firstgen_str_type = [   axl.Cooperator(),   
-                        axl.Alternator(),
-                        axl.TitForTat(),
-                        axl.FirstByTidemanAndChieruzzi(),
-                        axl.FirstByNydegger(),
-                        axl.FirstByGrofman(),
-                        axl.FirstByShubik(),
-                        axl.FirstBySteinAndRapoport(),
-                        axl.Grudger(),
-                        axl.FirstByDavis(),
-                        axl.RevisedDowning(),
-                        axl.FirstByFeld(),
-                        axl.FirstByJoss(),
-                        axl.FirstByTullock(),
-                        axl.Random() ]
-
-
-
-avrg_win_df = pd.DataFrame(index=firstgen_str_text, columns=firstgen_str_text)
-avrg_norm_df = pd.DataFrame(index=firstgen_str_text, columns=firstgen_str_text)
-
+avrg_win_df = pd.DataFrame(index=strategy_text, columns=strategy_text)
+avrg_norm_df = pd.DataFrame(index=strategy_text, columns=strategy_text)
 
 #### VARS FOR PROBABILISTIC DISTRIBUTION
-
-
-
 mean_m = 1000
 #dev_m = 0
 mean_t = 200
-dev_t = 30
+dev_t = None
 
-
+tour_type = "second"
 ###
 #################### FUNCTION FOR ONE MATCH      
 ###
@@ -122,27 +74,27 @@ def playall_random(run):
     matches = mean_m
     turns = mean_t
     
-    winners_DF = pd.DataFrame( index=firstgen_str_text, columns=firstgen_str_text)
-    normed_DF = pd.DataFrame( index=firstgen_str_text, columns=firstgen_str_text)
+    winners_DF = pd.DataFrame( index=strategy_text, columns=strategy_text)
+    normed_DF = pd.DataFrame( index=strategy_text, columns=strategy_text)
     
     results = [0, 0, 0]
 
-    for s1 in firstgen_str_type:
+    for s1 in strategy_type:
         fixed_s = s1
         rc = 0
-        for s2 in firstgen_str_type:
+        for s2 in strategy_type:
             rotating_s = s2
             results = list(map(operator.add, results, custom_nrof_mathches(fixed_s, rotating_s, matches)))
             normed_res = normalisation(results, matches)
-            winners_DF.at[ firstgen_str_text[fc], firstgen_str_text[rc] ] = results
-            normed_DF.at[ firstgen_str_text[fc], firstgen_str_text[rc]] = normed_res
+            winners_DF.at[ strategy_text[fc], strategy_text[rc] ] = results
+            normed_DF.at[ strategy_text[fc], strategy_text[rc]] = normed_res
             rc += 1
             results = [0, 0, 0]
         fc += 1
         results = [0, 0, 0]
-    if not os.path.exists('results/single_results_{}_{}_dev{}'.format(mean_m, mean_t, dev_t)):
-        os.makedirs('results/single_results_{}_{}_dev{}'.format(mean_m, mean_t, dev_t))
-    local_results_path = "results/single_results_{}_{}_dev{}".format(mean_m, mean_t, dev_t)
+    if not os.path.exists('results_{}/single_results_{}_{}_dev{}'.format(tour_type, mean_m, mean_t, dev_t)):
+        os.makedirs('results_{}/single_results_{}_{}_dev{}'.format(tour_type, mean_m, mean_t, dev_t))
+    local_results_path = "results_{}/single_results_{}_{}_dev{}".format(tour_type, mean_m, mean_t, dev_t)
 
     normed_DF.to_csv("{}/normed_m{}_t{}_dev{}.csv".format(local_results_path ,matches, turns, dev_t))
     winners_DF.to_csv("{}/winners_m{}_t{}_dev{}.csv".format(local_results_path, matches, turns, dev_t))
@@ -154,17 +106,17 @@ def sum_results(run, winners_DF, normed_DF):
     Addition of elements in a pd object.
     """
     fc = 0
-    for s1 in firstgen_str_type:
+    for s1 in strategy_type:
         fixed_s = s1
         rc = 0
-        for s2 in firstgen_str_type:
+        for s2 in strategy_type:
             rotating_s = s2
-            avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
-                map(operator.add, avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], 
-                    winners_DF.at[firstgen_str_text[fc], firstgen_str_text[rc]] ))
-            avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
-                map(operator.add, avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], 
-                    normed_DF.at[firstgen_str_text[fc], firstgen_str_text[rc]] ))
+            avrg_win_df.at[strategy_text[fc], strategy_text[rc]] = list( 
+                map(operator.add, avrg_win_df.at[strategy_text[fc], strategy_text[rc]], 
+                    winners_DF.at[strategy_text[fc], strategy_text[rc]] ))
+            avrg_norm_df.at[strategy_text[fc], strategy_text[rc]] = list( 
+                map(operator.add, avrg_norm_df.at[strategy_text[fc], strategy_text[rc]], 
+                    normed_DF.at[strategy_text[fc], strategy_text[rc]] ))
             rc += 1
         fc += 1
 ###
@@ -187,13 +139,13 @@ def init_avg_pds():
     Inits every element of the pd dataframe with: [0,0,0]
     """
     fc = 0
-    for s1 in firstgen_str_type:
+    for s1 in strategy_type:
         fixed_s = s1
         rc = 0
-        for s2 in firstgen_str_type:
+        for s2 in strategy_type:
             rotating_s = s2
-            avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = [0,0,0]
-            avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = [0,0,0]
+            avrg_win_df.at[strategy_text[fc], strategy_text[rc]] = [0,0,0]
+            avrg_norm_df.at[strategy_text[fc], strategy_text[rc]] = [0,0,0]
             rc += 1
         fc += 1
 
@@ -203,15 +155,15 @@ def pd_elements_division(runs):
     """
     run_list = [runs, runs, runs]
     fc = 0
-    for s1 in firstgen_str_type:
+    for s1 in strategy_type:
         fixed_s = s1
         rc = 0
-        for s2 in firstgen_str_type:
+        for s2 in strategy_type:
             rotating_s = s2
-            avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
-                map(operator.truediv, avrg_win_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], run_list ))
-            avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]] = list( 
-                map(operator.truediv, avrg_norm_df.at[firstgen_str_text[fc], firstgen_str_text[rc]], run_list ))
+            avrg_win_df.at[strategy_text[fc], strategy_text[rc]] = list( 
+                map(operator.truediv, avrg_win_df.at[strategy_text[fc], strategy_text[rc]], run_list ))
+            avrg_norm_df.at[strategy_text[fc], strategy_text[rc]] = list( 
+                map(operator.truediv, avrg_norm_df.at[strategy_text[fc], strategy_text[rc]], run_list ))
             rc += 1
         fc += 1
 
@@ -230,6 +182,8 @@ def normalisation(results, matches):
 #################### MAIN LOGIC
 ###
 def main(random, runs):
+    print(len(strategy_type))
+    print(len(strategy_text))
     if random == False:
         print("Only random mode available.")
     elif random == True:
@@ -247,8 +201,9 @@ def main(random, runs):
     print("Writing to file...")
     avg_to_file(runs)
 
-    for strategy in firstgen_str_text:
+    for strategy in strategy_text:
         for i, row in avrg_norm_df.iterrows():
+            print(strategy_text)
             print(type(row[strategy]))
             print(row[strategy])
 

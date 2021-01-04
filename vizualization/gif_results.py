@@ -2,7 +2,7 @@
 
 import glob
 from PIL import Image
-dev_t = 30
+dev_t = None
 # filepaths
 fp_in = "dev_run_{}/*.jpeg".format(dev_t)
 fp_out = "dev_run_{}/results_normed_m1000_t200_dev{}.gif".format(dev_t, dev_t)
