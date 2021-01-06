@@ -2,7 +2,6 @@ import axelrod as axl
 
 # Include a list of parametrized strategies
 
-
 #### ORDER MUST BE THE SAME AS FIRSTEN_STR TYPE
 firstgen_str_text = [   "Cooperator", "Alternator", "TitForTat", "TidemanAndChieruzzi", "Nydegger", "Grofman",
                         "Shubik", "SteinAndRapoport", "Grudger", "Davis", "RevisedDowning", "Feld", "Joss","Tullock", "Random" ]
