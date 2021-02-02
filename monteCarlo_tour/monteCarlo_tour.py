@@ -8,7 +8,6 @@ import time, os, operator
 import argparse
 import numpy as np
 import pandas as pd
-import pprint
 
 import axelrod as axl
 
@@ -106,11 +105,9 @@ def sum_results(run, winners_DF, normed_DF):
     Addition of elements in a pd object.
     """
     fc = 0
-    for s1 in strategy_type:
-        fixed_s = s1
+    for s1 in strategy_type: # fixed
         rc = 0
-        for s2 in strategy_type:
-            rotating_s = s2
+        for s2 in strategy_type: # rotating
             avrg_win_df.at[strategy_text[fc], strategy_text[rc]] = list( 
                 map(operator.add, avrg_win_df.at[strategy_text[fc], strategy_text[rc]], 
                     winners_DF.at[strategy_text[fc], strategy_text[rc]] ))
@@ -201,11 +198,11 @@ def main(random, runs):
     print("Writing to file...")
     avg_to_file(runs)
 
-    for strategy in strategy_text:
-        for i, row in avrg_norm_df.iterrows():
-            print(strategy_text)
-            print(type(row[strategy]))
-            print(row[strategy])
+#    for strategy in strategy_text:
+#        for i, row in avrg_norm_df.iterrows():
+#            print(strategy_text)
+#            print(type(row[strategy]))
+#            print(row[strategy])
 
 ###
 #################### MAIN EXECUTION
@@ -218,7 +215,8 @@ if __name__ == '__main__':
     """
 
     # Create parser and add arguments.
-    parser = argparse.ArgumentParser(description="Main function for runnnig round robin tournaments.")
+    parser = argparse.ArgumentParser(
+        description="Main function for runnnig round robin tournaments.")
 
     parser.add_argument("--random", "-r", 
         help="For randomly generating a the number of matches and the numbers of turns in a match.", 
