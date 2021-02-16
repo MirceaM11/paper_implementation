@@ -1,7 +1,7 @@
 #/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 
 '''
-One module to rule thema all!
+One module to rule them all!
 '''
 
 import time, os, operator
@@ -12,8 +12,8 @@ import pprint
 
 import axelrod as axl
 
-from players import players as strategy_type
-from players import secondgen_str_text as strategy_text
+from players import secondgen_str_type_w_alt as strategy_type
+from players import secondgen_str_text_w_alt as strategy_text
 
 avrg_win_df = pd.DataFrame(index=strategy_text, columns=strategy_text)
 avrg_norm_df = pd.DataFrame(index=strategy_text, columns=strategy_text)
@@ -22,9 +22,9 @@ avrg_norm_df = pd.DataFrame(index=strategy_text, columns=strategy_text)
 mean_m = 1000
 #dev_m = 0
 mean_t = 200
-dev_t = None
+dev_t = 40
 
-tour_type = "second"
+tour_type = "second_w_alt"
 ###
 #################### FUNCTION FOR ONE MATCH      
 ###

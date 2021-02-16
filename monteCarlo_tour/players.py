@@ -22,16 +22,16 @@ firstgen_str_type = [       axl.Cooperator(),
                             axl.FirstByJoss(),
                             axl.FirstByTullock(),
                             axl.Random() ]
+
 #### ORDER MUST BE THE SAME AS FISTGEN STR STR(TEXT)
 secondgen_str_text = [  "Champion", 
-                        "Eatherley", "Tester", "Gladstein", "Tranquilizer", "SecGrofman", "Kluepfel", "Borufsen", "Cave",
+                        "Eatherley", "Tester", "Tranquilizer", "SecGrofman", "Kluepfel", "Borufsen", "Cave",
                         "WmAdams", "GraaskampKatzen", "Weiner", "Harrington", "SecTidemanAndChieruzzi", "Getzler", "Leyvraz", "White", "Black",
                         "RichardHufford", "Yamachi", "Colbert", "Mikkelson", "Rowsam", "Appold"]
 
 secondgen_str_type = [  axl.SecondByChampion(),   
                         axl.SecondByEatherley(),
                         axl.SecondByTester(),
-                        axl.SecondByGladstein(),
                         axl.SecondByTranquilizer(),
                         axl.SecondByGrofman(),
                         axl.SecondByKluepfel(),
@@ -53,8 +53,35 @@ secondgen_str_type = [  axl.SecondByChampion(),
                         axl.SecondByRowsam(),
                         axl.SecondByAppold() ]
 
+secondgen_str_text_w_alt = [  "Champion", 
+                        "Eatherley", "Tester", "Tranquilizer", "SecGrofman", "Kluepfel", "Borufsen", "Cave",
+                        "WmAdams", "GraaskampKatzen", "Weiner", "Harrington", "SecTidemanAndChieruzzi", "Getzler", "Leyvraz", "White", "Black",
+                        "RichardHufford", "Yamachi", "Colbert", "Mikkelson", "Rowsam", "Appold", "Alternator"]
 
-players = secondgen_str_type
+secondgen_str_type_w_alt = [  axl.SecondByChampion(),   
+                        axl.SecondByEatherley(),
+                        axl.SecondByTester(),
+                        axl.SecondByTranquilizer(),
+                        axl.SecondByGrofman(),
+                        axl.SecondByKluepfel(),
+                        axl.SecondByBorufsen(),
+                        axl.SecondByCave(),
+                        axl.SecondByWmAdams(),
+                        axl.SecondByGraaskampKatzen(),
+                        axl.SecondByWeiner(),
+                        axl.SecondByHarrington(),
+                        axl.SecondByTidemanAndChieruzzi(),
+                        axl.SecondByGetzler(),
+                        axl.SecondByLeyvraz(),
+                        axl.SecondByWhite(),
+                        axl.SecondByBlack(),
+                        axl.SecondByRichardHufford(),
+                        axl.SecondByYamachi(),
+                        axl.SecondByColbert(),
+                        axl.SecondByMikkelson(),
+                        axl.SecondByRowsam(),
+                        axl.SecondByAppold(),
+                        axl.Alternator() ]
 
 # players = [s() for s in axl.strategies] + parameterized_players
 # players.sort(key=lambda p:p.__repr__())
