@@ -22,14 +22,17 @@ firstgen_str_type = [       axl.Cooperator(),
                             axl.FirstByTullock(),
                             axl.Random() ]
 #### ORDER MUST BE THE SAME AS FISTGEN STR STR(TEXT)
-secondgen_str_text = [  "Champion", "Eatherley", "Tester", "Gladstein", "Tranquilizer", "SecGrofman", "Kluepfel", "Borufsen", "Cave",
+secondgen_str_text = [  "Champion", "Eatherley", "Tester", "Tranquilizer", "SecGrofman", "Kluepfel", "Borufsen", "Cave",
                         "WmAdams", "GraaskampKatzen", "Weiner", "Harrington", "SecTidemanAndChieruzzi", "Getzler", "Leyvraz", "White", "Black",
                         "RichardHufford", "Yamachi", "Colbert", "Mikkelson", "Rowsam", "Appold"]
+
+secondgen_str_text_a = [  "Champion", "Eatherley", "Tester", "Tranquilizer", "SecGrofman", "Kluepfel", "Borufsen", "Cave",
+                        "WmAdams", "GraaskampKatzen", "Weiner", "Harrington", "SecTidemanAndChieruzzi", "Getzler", "Leyvraz", "White", "Black",
+                        "RichardHufford", "Yamachi", "Colbert", "Mikkelson", "Rowsam", "Appold", "Alternator"]
 
 secondgen_str_type = [  axl.SecondByChampion(),   
                         axl.SecondByEatherley(),
                         axl.SecondByTester(),
-                        axl.SecondByGladstein(),
                         axl.SecondByTranquilizer(),
                         axl.SecondByGrofman(),
                         axl.SecondByKluepfel(),
@@ -50,8 +53,6 @@ secondgen_str_type = [  axl.SecondByChampion(),
                         axl.SecondByRowsam(),
                         axl.SecondByAppold() ]
 
-
-players = secondgen_str_type
 
 # players = [s() for s in axl.strategies] + parameterized_players
 # players.sort(key=lambda p:p.__repr__())
